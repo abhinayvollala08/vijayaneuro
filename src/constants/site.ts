@@ -1,0 +1,35 @@
+export const SITE = {
+  name: "Vijaya Neuro Hospital",
+  tagline: "Advanced Neurological Care for a Healthier Life",
+  url: "https://www.vijayaneurohosp.com",
+  phone: "+91-XXXXXXXXXX",
+  whatsapp: "+91-XXXXXXXXXX",
+  email: "info@vijayaneurohosp.com",
+  emergency: "+91-XXXXXXXXXX",
+  address: {
+    street: "Your Street Address",
+    city: "Your City",
+    state: "Telangana",
+    pin: "XXXXXX",
+    full: "Your Street, City, Telangana — XXXXXX",
+  },
+  timings: {
+    morning: "9:00 AM – 1:00 PM",
+    evening: "5:00 PM – 8:00 PM",
+    days: "Monday – Saturday",
+    closed: "Sunday (Emergency Only)",
+  },
+  stats: {
+    patients: "10,000+",
+    experience: "15+",
+    diagnostics: "5",
+    rating: "4.9",
+  },
+  doctor: {
+    name: "Dr. Dasari Venkatesh",
+    quals: "MBBS, DNB (Gen. Med.), DNB (Neurology)",
+    title: "Consultant Neuro Physician",
+    specialty: "Stroke & Epilepsy Specialist",
+    experience: "Ex-Resident, Care Hospital, Hyderabad",
+  },
+} as const;

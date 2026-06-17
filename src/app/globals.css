@@ -1,26 +1,252 @@
 @import "tailwindcss";
 
+/* ════════════════════════════════════════════════
+   VIJAYA NEURO HOSPITAL — Design System
+   ════════════════════════════════════════════════ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ── Core Brand ─────────────────────────────── */
+  --navy-900:        #0c2444;
+  --navy-800:        #112f58;
+  --navy-700:        #173c69;
+  --navy-600:        #1d4a82;
+  --navy-500:        #234d84;
+  --navy-400:        #2e62a3;
+  --navy-100:        #d0dff0;
+  --navy-50:         #eef4fb;
+
+  /* ── Accent Orange ──────────────────────────── */
+  --orange-600:      #cc6010;
+  --orange-500:      #f67d20;
+  --orange-400:      #f8923d;
+  --orange-100:      #fde8d5;
+  --orange-50:       #fff4ec;
+
+  /* ── Neutrals ───────────────────────────────── */
+  --white:           #ffffff;
+  --surface:         #f8fafc;
+  --border:          #d7e3f2;
+  --border-strong:   #b8cfe8;
+  --text-primary:    #111827;
+  --text-body:       #374151;
+  --text-muted:      #64748b;
+  --text-subtle:     #94a3b8;
+
+  /* ── Semantic ───────────────────────────────── */
+  --success:         #059669;
+  --warning:         #d97706;
+  --danger:          #dc2626;
+  --info:            #0284c7;
+
+  /* ── Gradients ──────────────────────────────── */
+  --grad-hero:       linear-gradient(135deg, #0c2444 0%, #173c69 50%, #1d4a82 100%);
+  --grad-navy:       linear-gradient(180deg, #173c69 0%, #234d84 100%);
+  --grad-orange:     linear-gradient(135deg, #f67d20 0%, #f8923d 100%);
+  --grad-surface:    linear-gradient(180deg, #eef4fb 0%, #f8fafc 100%);
+  --grad-card:       linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  --grad-glass:      linear-gradient(135deg,
+                       rgba(255,255,255,0.10) 0%,
+                       rgba(255,255,255,0.04) 100%);
+
+  /* ── Shadows ────────────────────────────────── */
+  --shadow-sm:       0 1px 4px rgba(23,60,105,0.06);
+  --shadow-md:       0 4px 20px rgba(23,60,105,0.10);
+  --shadow-lg:       0 12px 40px rgba(23,60,105,0.14);
+  --shadow-xl:       0 24px 60px rgba(23,60,105,0.18);
+  --shadow-orange:   0 8px 28px rgba(246,125,32,0.32);
+  --shadow-glass:    0 8px 32px rgba(0,0,0,0.20);
+
+  /* ── Border Radius ──────────────────────────── */
+  --radius-sm:       6px;
+  --radius-md:       10px;
+  --radius-lg:       16px;
+  --radius-xl:       20px;
+  --radius-2xl:      28px;
+  --radius-full:     9999px;
+
+  /* ── Typography ─────────────────────────────── */
+  --font-display:    'Playfair Display', Georgia, serif;
+  --font-sans:       'DM Sans', system-ui, sans-serif;
+  --font-mono:       'DM Mono', monospace;
 }
 
+/* ── Tailwind v4 Theme Extension ─────────────── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* Colors */
+  --color-navy-900: #0c2444;
+  --color-navy-800: #112f58;
+  --color-navy-700: #173c69;
+  --color-navy-600: #1d4a82;
+  --color-navy-500: #234d84;
+  --color-navy-400: #2e62a3;
+  --color-navy-100: #d0dff0;
+  --color-navy-50:  #eef4fb;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --color-brand-orange:       #f67d20;
+  --color-brand-orange-dark:  #cc6010;
+  --color-brand-orange-light: #fde8d5;
+  --color-orange-50:  #fff4ec;
+  --color-orange-100: #fde8d5;
+  --color-orange-400: #f8923d;
+  --color-orange-500: #f67d20;
+  --color-orange-600: #cc6010;
+
+  --color-surface:      #f8fafc;
+  --color-border:       #d7e3f2;
+  --color-border-strong:#b8cfe8;
+  --color-text-primary: #111827;
+  --color-text-body:    #374151;
+  --color-text-muted:   #64748b;
+  --color-text-subtle:  #94a3b8;
+
+  --color-success: #059669;
+  --color-warning: #d97706;
+  --color-danger:  #dc2626;
+  --color-info:    #0284c7;
+
+  /* Fonts */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-sans:    'DM Sans', system-ui, sans-serif;
+  --font-mono:    'DM Mono', monospace;
+
+  /* Background images */
+  --background-image-hero-gradient:   linear-gradient(135deg, #0c2444 0%, #173c69 50%, #1d4a82 100%);
+  --background-image-navy-gradient:   linear-gradient(180deg, #173c69 0%, #234d84 100%);
+  --background-image-orange-gradient: linear-gradient(135deg, #f67d20 0%, #f8923d 100%);
+
+  /* Shadows */
+  --shadow-card:    0 4px 20px rgba(23,60,105,0.10);
+  --shadow-card-lg: 0 12px 40px rgba(23,60,105,0.14);
+  --shadow-orange:  0 8px 28px rgba(246,125,32,0.32);
+  --shadow-glass:   0 8px 32px rgba(0,0,0,0.20);
+
+  /* Animations */
+  --animate-eeg-pulse:    eegPulse 3s linear infinite;
+  --animate-float:        float 3s ease-in-out infinite;
+  --animate-counter-up:   counterUp 1.5s ease-out forwards;
+  --animate-fade-up:      fadeUp 0.6s ease-out forwards;
+  --animate-neural-pulse: neuralPulse 4s ease-in-out infinite;
+
+  /* Keyframes */
+  @keyframes eegPulse {
+    0%   { stroke-dashoffset: 1200; }
+    100% { stroke-dashoffset: 0; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50%      { transform: translateY(-8px); }
+  }
+  @keyframes fadeUp {
+    0%   { opacity: 0; transform: translateY(24px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes neuralPulse {
+    0%, 100% { opacity: 0.04; }
+    50%      { opacity: 0.10; }
+  }
+  @keyframes counterUp {
+    0%   { opacity: 0; transform: translateY(16px); }
+    100% { opacity: 1; transform: translateY(0); }
   }
 }
 
+/* ── Base Styles ─────────────────────────────── */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--surface);
+  color: var(--text-body);
+  font-family: var(--font-sans);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Selection ───────────────────────────────── */
+::selection {
+  background: rgba(246, 125, 32, 0.2);
+  color: var(--navy-700);
+}
+
+/* ── Scrollbar ───────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--navy-50);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--navy-100);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--navy-400);
+}
+
+/* ── Focus ring ──────────────────────────────── */
+*:focus-visible {
+  outline: 2px solid var(--orange-500);
+  outline-offset: 2px;
+}
+
+/* ── Smooth scroll ───────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ── Typography helpers ──────────────────────── */
+.heading-hero {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.08;
+  font-size: clamp(42px, 6vw, 68px);
+}
+
+.heading-section {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.15;
+  font-size: clamp(32px, 4vw, 48px);
+  color: var(--navy-700);
+}
+
+.eyebrow {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--orange-500);
+}
+
+/* ── Glass card utility ──────────────────────── */
+.glass-card {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-xl);
+}
+
+.glass-card-light {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+}
+
+/* ── Container ───────────────────────────────── */
+.container-custom {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+/* ── Gradient text ───────────────────────────── */
+.gradient-text-orange {
+  background: var(--grad-orange);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
