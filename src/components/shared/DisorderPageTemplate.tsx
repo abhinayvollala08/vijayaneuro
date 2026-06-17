@@ -1,8 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { Brain, CheckCircle2, ArrowLeft, Calendar, FileText, ChevronRight, Activity } from "lucide-react";
+import { Brain, CheckCircle2, ArrowLeft, Calendar, FileText, ChevronRight, Activity, Clock, ShieldAlert, Sparkles, Printer } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { NeuralBackground } from "@/components/shared/NeuralBackground";
@@ -38,6 +39,73 @@ export function DisorderPageTemplate({
   slug,
 }: DisorderPageProps) {
   const otherDisorders = allDisorders.filter((d) => d.slug !== slug);
+
+  const [activeTimelineStep, setActiveTimelineStep] = useState(0);
+  const [selectedTestType, setSelectedTestType] = useState("mri_ct");
+  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+
+  const timelineSteps = [
+    {
+      title: "Initial Evaluation",
+      desc: "Comprehensive clinical examination of motor, sensory, cognitive, and reflex pathways.",
+      prep: "Bring all past medications, prescriptions, and any family medical history details.",
+    },
+    {
+      title: "Diagnostic Mapping",
+      desc: "Targeted neuroimaging and electrophysiological tests to localize the brain/nerve issue.",
+      prep: "Depends on the test (e.g. clean hair for EEG, metal removal for MRI). See our test prep below.",
+    },
+    {
+      title: "Custom Therapy Plan",
+      desc: "Formulation of medical treatments, spasticity controls, or surgical pathways.",
+      prep: "Carefully follow dosage and lifestyle adjustments recommended by Dr. Venkatesh.",
+    },
+    {
+      title: "Neuro-Rehabilitation",
+      desc: "Dedicated physical, occupational, and cognitive retraining programs to build recovery.",
+      prep: "Wear loose clothing. Keep rehabilitation schedules consistent for maximum neuroplastic recovery.",
+    },
+  ];
+
+  const prepChecklists = {
+    mri_ct: {
+      name: "Brain / Spine MRI & CT",
+      items: [
+        "Remove all metallic items: jewelry, watches, keys, eyeglasses, belts, and hairpins.",
+        "Wear loose, comfortable clothing without metal zippers or buttons.",
+        "Inform staff of any implants (pacemakers, aneurysm clips, metal pins).",
+        "Bring all previous scan reports (X-rays, CTs, MRIs) for clinical comparison.",
+        "Notify the technician if you are or might be pregnant.",
+      ],
+    },
+    eeg: {
+      name: "Video EEG & EEG",
+      items: [
+        "Wash hair thoroughly the night before. Do NOT apply oils, gels, hairspray, or hair creams.",
+        "Avoid caffeinated drinks (coffee, tea, cola) and chocolate for 12 hours prior to the test.",
+        "If a sleep-deprived EEG is ordered: sleep only 4 hours the night before the test.",
+        "Continue taking regular medications unless specifically told to stop by the doctor.",
+        "Have a light meal/snack before the test (low blood sugar can affect EEG patterns).",
+      ],
+    },
+    ncs_emg: {
+      name: "Nerve Studies (NCS/EMG)",
+      items: [
+        "Take a bath or shower to keep skin clean. Do NOT apply lotions, creams, or oils.",
+        "Wear loose, warm clothing to ensure limbs are warm (cold limbs slow nerve conduction).",
+        "Inform the doctor if you have a pacemaker or are taking blood thinners (aspirin, warfarin).",
+        "You can eat and drink normally prior to the test.",
+      ],
+    },
+    blood: {
+      name: "Comprehensive Bloods",
+      items: [
+        "Fast for 8-12 hours if your tests include fasting blood sugar or lipid panels (water is fine).",
+        "Inform the clinic of any medications or supplements you took in the morning.",
+        "Stay hydrated: drinking water makes veins easier to locate for blood draws.",
+      ],
+    },
+  };
 
   return (
     <div className="relative min-h-screen pt-24 pb-16 overflow-hidden">
@@ -160,6 +228,156 @@ export function DisorderPageTemplate({
                 </Card>
               </motion.div>
             </div>
+
+            {/* Interactive Treatment Care Timeline */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="mt-8"
+            >
+              <Card className="p-8 border-navy-100 bg-white/95 shadow-md">
+                <h2 className="font-display font-semibold text-2xl text-navy-900 mb-4 flex items-center gap-3">
+                  <Sparkles className="text-brand-orange w-6 h-6 shrink-0 animate-pulse" />
+                  Your Care Pathway Timeline
+                </h2>
+                <p className="text-sm text-text-muted mb-6">
+                  Click on each stage of the timeline below to see what to expect and how to prepare.
+                </p>
+
+                {/* Timeline Stepper UI */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                  {timelineSteps.map((stepItem, idx) => {
+                    const isActive = activeTimelineStep === idx;
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => setActiveTimelineStep(idx)}
+                        className={`p-4 rounded-xl border text-left transition-all relative overflow-hidden group cursor-pointer ${
+                          isActive
+                            ? "bg-navy-900 text-white border-navy-900 shadow-md"
+                            : "bg-white hover:bg-navy-50 text-navy-700 border-navy-100"
+                        }`}
+                      >
+                        <span className={`text-[10px] font-bold uppercase tracking-wider block mb-1 ${
+                          isActive ? "text-brand-orange" : "text-text-muted group-hover:text-brand-orange"
+                        }`}>
+                          Stage 0{idx + 1}
+                        </span>
+                        <h4 className="font-display font-semibold text-xs sm:text-sm">
+                          {stepItem.title}
+                        </h4>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Active Step Details Card */}
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeTimelineStep}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="p-5 rounded-2xl bg-navy-50 border border-navy-100"
+                  >
+                    <div className="flex items-start gap-3">
+                      <Clock className="w-5 h-5 text-brand-orange shrink-0 mt-0.5" />
+                      <div>
+                        <h4 className="font-display font-semibold text-navy-900 text-base mb-1">
+                          {timelineSteps[activeTimelineStep].title} Overview
+                        </h4>
+                        <p className="text-sm text-text-body mb-3 leading-relaxed">
+                          {timelineSteps[activeTimelineStep].desc}
+                        </p>
+                        <div className="flex items-start gap-2 text-xs border-t border-navy-100/50 pt-2 text-text-muted">
+                          <ShieldAlert className="w-4 h-4 text-brand-orange shrink-0 mt-0.5" />
+                          <span><strong>Patient Instruction:</strong> {timelineSteps[activeTimelineStep].prep}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
+              </Card>
+            </motion.div>
+
+            {/* Diagnostic Preparation Checklist Guide */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              className="mt-8"
+            >
+              <Card className="p-8 border-navy-100 bg-white/95 shadow-md">
+                <h2 className="font-display font-semibold text-2xl text-navy-900 mb-4 flex items-center gap-3">
+                  <FileText className="text-brand-orange w-6 h-6 shrink-0" />
+                  Diagnostic Test Prep Checklist
+                </h2>
+                <p className="text-sm text-text-muted mb-6">
+                  Select a diagnostic screening procedure to generate your interactive safety and prep checklist.
+                </p>
+
+                {/* Checklist Select Tabs */}
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {Object.entries(prepChecklists).map(([key, value]) => {
+                    const isSelected = selectedTestType === key;
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => setSelectedTestType(key)}
+                        className={`px-4 py-2 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
+                          isSelected
+                            ? "bg-brand-orange text-white border-brand-orange shadow-sm"
+                            : "bg-white text-navy-700 border-navy-100 hover:bg-navy-50"
+                        }`}
+                      >
+                        {value.name}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Checklist Checklist Items */}
+                <div className="p-5 rounded-2xl bg-white border border-navy-50 shadow-sm space-y-3">
+                  <h4 className="font-display font-semibold text-navy-900 text-sm border-b border-navy-50 pb-2 flex justify-between items-center">
+                    <span>{prepChecklists[selectedTestType as keyof typeof prepChecklists].name} Preparation</span>
+                    <button
+                      onClick={() => window.print()}
+                      className="text-xs text-brand-orange hover:text-brand-orange-dark font-sans flex items-center gap-1 hover:underline cursor-pointer"
+                    >
+                      <Printer size={12} /> Print Prep Guide
+                    </button>
+                  </h4>
+                  <div className="space-y-3">
+                    {prepChecklists[selectedTestType as keyof typeof prepChecklists].items.map((item, idx) => {
+                      const checkboxKey = `${selectedTestType}-${idx}`;
+                      const isChecked = !!checkedItems[checkboxKey];
+                      return (
+                        <label
+                          key={idx}
+                          className="flex items-start gap-3 p-2 rounded-lg hover:bg-navy-50/50 cursor-pointer transition-colors"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => setCheckedItems({
+                              ...checkedItems,
+                              [checkboxKey]: !isChecked
+                            })}
+                            className="mt-1 h-4 w-4 rounded border-navy-100 text-brand-orange focus:ring-brand-orange accent-brand-orange cursor-pointer"
+                          />
+                          <span className={`text-xs sm:text-sm font-sans leading-relaxed transition-all ${
+                            isChecked ? "text-text-muted line-through" : "text-text-body font-medium"
+                          }`}>
+                            {item}
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              </Card>
+            </motion.div>
           </div>
 
           {/* Right Column - Booking & Sidebar Navigation */}

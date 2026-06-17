@@ -29,6 +29,9 @@ export const NAV_ITEMS: NavItem[] = [
     href: "/resources",
     children: [
       { label: "Health Blog", href: "/resources" },
+      { label: "Symptom Router", href: "/tools/symptom-router" },
+      { label: "Stroke Risk Calculator", href: "/tools/stroke-risk" },
+      { label: "Seizure Prep Quiz", href: "/tools/seizure-assessment" },
       { label: "FAQs", href: "/resources#faq" },
     ],
   },

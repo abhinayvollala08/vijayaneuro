@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { DM_Sans, Playfair_Display, DM_Mono } from "next/font/google";
+import { Inter, Playfair_Display, DM_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { SessionProvider } from "@/components/providers/SessionProvider";
 import "./globals.css";
 
-const dmSans = DM_Sans({
+const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
   weight: ["300", "400", "500", "600", "700"],
@@ -77,7 +77,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${dmSans.variable} ${playfair.variable} ${dmMono.variable} h-full`}
+      className={`${inter.variable} ${playfair.variable} ${dmMono.variable} h-full`}
     >
       <body className="min-h-full flex flex-col antialiased">
         <SessionProvider>

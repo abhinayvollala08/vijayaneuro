@@ -1,220 +1,327 @@
 "use client";
 
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { Calendar, Phone, Brain, Activity, Shield, Waves } from "lucide-react";
+import Image from "next/image";
+import {
+  Calendar,
+  Phone,
+  Brain,
+  Activity,
+  Shield,
+  Star,
+  CheckCircle2,
+  ChevronRight,
+  ChevronLeft,
+  MapPin,
+  Clock,
+  Building,
+  Users,
+  Award
+} from "lucide-react";
 import { SITE } from "@/constants/site";
-import { NeuralBackground } from "@/components/shared/NeuralBackground";
-import { EEGWave } from "@/components/shared/EEGWave";
 
-const floatingCards = [
-  { icon: Waves, label: "Video EEG", delay: 0.4, pos: "top-16 right-8" as const },
-  { icon: Activity, label: "Stroke Care", delay: 0.6, pos: "top-48 right-[-16px]" as const },
-  { icon: Brain, label: "ENMG Testing", delay: 0.8, pos: "bottom-32 right-4" as const },
-  { icon: Shield, label: "Neuro Rehab", delay: 1.0, pos: "bottom-16 left-[-8px]" as const },
+const slides = [
+  {
+    image: "/doctor-hero2.jpg",
+    label: "Expert Neurology Care",
+    headline: "Expert Neurology & Neurosurgery Care You Can Trust",
+    description: "Advanced neurological diagnosis and treatment delivered by experienced specialists using modern clinical protocols.",
+    highlights: [
+      "Stroke & Emergency Neuro Care",
+      "Brain & Spine Surgery",
+      "Epilepsy Management",
+      "Movement Disorders Treatment",
+    ],
+    credibility: {
+      name: SITE.doctor.name,
+      quals: SITE.doctor.quals,
+      exp: "15+ Years of Clinical Experience",
+    },
+    primaryCta: { text: "Book Appointment", href: "/appointment" },
+    secondaryCta: { text: "Call Now", href: "tel:+919121568899" },
+  },
+  {
+    image: "/hospital_eeg_lab.png",
+    label: "Precision Diagnostics",
+    headline: "Precision Diagnostics with Advanced Neuro Technology",
+    description: "Accurate neurological evaluation powered by modern imaging and diagnostic systems for faster, safer treatment decisions.",
+    highlights: [
+      "MRI & CT Scans",
+      "EEG & EMG Testing",
+      "Neurophysiology Lab",
+      "Early Detection Systems",
+    ],
+    primaryCta: { text: "Explore Services", href: "/diagnostics" },
+    secondaryCta: { text: "Book Consultation", href: "/appointment" },
+  },
+  {
+    image: "/hospital_icu.png",
+    label: "Trusted Hospital Experience",
+    headline: "Compassionate Care in a World-Class Neuro Hospital",
+    description: "We combine advanced neurological care with a patient-first approach, ensuring safety, comfort, and trust at every stage of treatment.",
+    highlights: [
+      "24/7 Emergency Neuro Care",
+      "Dedicated Neuro ICU",
+      "Hygienic, Modern Infrastructure",
+      "High Patient Satisfaction",
+    ],
+    primaryCta: { text: "Emergency Assistance", href: "tel:+919121568899" },
+    secondaryCta: { text: "Get Directions (Google Maps)", href: "https://maps.google.com/?q=Vijaya+Neuro+Hospital" },
+  },
 ];
 
 export function HeroSection() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Swipe support states
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+  const handleNextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
+  };
+
+  const handlePrevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  };
+
+  // Keyboard accessibility
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") handleNextSlide();
+      if (e.key === "ArrowLeft") handlePrevSlide();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [currentSlide]);
+
+  // Autoplay (pauses on hover)
+  useEffect(() => {
+    if (isHovered) return;
+    const timer = setInterval(() => {
+      handleNextSlide();
+    }, 6000);
+    return () => clearInterval(timer);
+  }, [isHovered, currentSlide]);
+
+  // Mobile swipe handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+    if (isLeftSwipe) handleNextSlide();
+    if (isRightSwipe) handlePrevSlide();
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
+
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden bg-hero-gradient">
-      <NeuralBackground />
-      <EEGWave className="absolute bottom-0 left-0 right-0 h-32 opacity-20" />
-
-      {/* Radial glows */}
-      <div className="absolute right-[5%] top-1/2 -translate-y-1/2 w-[560px] h-[560px] rounded-full bg-navy-600/30 blur-3xl pointer-events-none" />
-      <div className="absolute right-[8%] top-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full bg-brand-orange/10 blur-2xl pointer-events-none" />
-
-      <div className="container-custom py-24 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left: Text */}
+    <section
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      className="relative min-h-[100vh] lg:h-[100vh] flex flex-col justify-between overflow-hidden bg-navy-900"
+    >
+      {/* Background Images with Fade Transition */}
+      <div className="absolute inset-0 z-0">
+        <AnimatePresence initial={false} mode="wait">
           <motion.div
-            initial={{ opacity: 0, y: 32 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            className="text-white"
+            key={currentSlide}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
+            className="absolute inset-0 w-full h-full"
           >
-            {/* Eyebrow */}
+            <Image
+              src={slides[currentSlide].image}
+              alt={slides[currentSlide].headline}
+              fill
+              className="object-cover object-center pointer-events-none"
+              priority
+            />
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Linear dark gradient overlay for typography contrast */}
+        <div className="absolute inset-0 z-10" style={{ background: "linear-gradient(to right, rgba(12, 36, 68, 0.75), rgba(12, 36, 68, 0.55))" }} />
+      </div>
+
+      {/* Main Slide Content Grid */}
+      <div className="container-custom flex-grow flex items-center relative z-25 py-16 md:py-24">
+        <div className="w-full max-w-3xl">
+          <AnimatePresence initial={false} mode="wait">
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
+              key={currentSlide}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 bg-white/[0.08] border border-white/[0.15] rounded-full px-4 py-2 text-sm mb-8"
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.5 }}
+              className="space-y-6 text-left"
             >
-              <span className="w-2 h-2 bg-brand-orange rounded-full animate-pulse" />
-              <span className="text-white/80 font-sans font-medium tracking-wide">
-                Vijaya Neuro Hospital — Specialized Neuro Care
-              </span>
-            </motion.div>
-
-            {/* H1 */}
-            <motion.h1
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.7 }}
-              className="font-display font-bold leading-[1.08] mb-6 text-[clamp(36px,6vw,68px)]"
-            >
-              Expert Neurology{" "}
-              <span className="block">Care Powered by</span>
-              <span className="text-brand-orange block">
-                Advanced Diagnostics
-              </span>
-            </motion.h1>
-
-            {/* Subheadline */}
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="text-white/75 text-lg font-sans leading-relaxed max-w-[540px] mb-8"
-            >
-              Comprehensive diagnosis, treatment, and rehabilitation for stroke,
-              epilepsy, migraines, nerve disorders, memory problems, spinal
-              conditions, and chronic neurological diseases.
-            </motion.p>
-
-            {/* Trust indicators */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              className="flex flex-wrap gap-2.5 mb-10"
-            >
-              {[
-                "Stroke Specialist",
-                "Epilepsy Expert",
-                "Video EEG Facility",
-                "ENMG Testing",
-                "Neuro Rehabilitation",
-              ].map((item) => (
-                <span
-                  key={item}
-                  className="flex items-center gap-1.5 text-xs font-medium text-white/80 bg-white/[0.08] border border-white/[0.12] rounded-full px-3 py-1.5"
-                >
-                  <span className="text-brand-orange text-sm">✓</span>
-                  {item}
+              {/* Trust Badge label */}
+              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4.5 py-1.5 shadow-sm">
+                <Shield size={14} className="text-brand-orange" />
+                <span className="text-white text-xs font-bold uppercase tracking-wider font-sans">
+                  {slides[currentSlide].label}
                 </span>
-              ))}
-            </motion.div>
+              </div>
 
-            {/* CTAs */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
-              className="flex flex-wrap gap-4 mb-12"
-            >
-              <Link
-                href="/appointment"
-                className="flex items-center gap-2.5 bg-brand-orange hover:bg-orange-600 text-white font-sans font-semibold text-base px-7 py-4 rounded-xl shadow-orange transition-all hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(246,125,32,0.45)]"
-              >
-                <Calendar size={18} />
-                Book Appointment
-              </Link>
-              <a
-                href={`tel:${SITE.phone}`}
-                className="flex items-center gap-2.5 border-2 border-white/30 text-white font-sans font-semibold text-base px-7 py-4 rounded-xl hover:border-brand-orange hover:text-brand-orange transition-all"
-              >
-                <Phone size={18} />
-                Call Now
-              </a>
-            </motion.div>
+              {/* Headline */}
+              <h1 className="font-display font-bold text-4xl sm:text-5xl xl:text-6xl text-white leading-[1.10]">
+                {slides[currentSlide].headline}
+              </h1>
 
-            {/* Stats */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.9 }}
-              className="flex items-center gap-6 sm:gap-8"
-            >
-              {[
-                { value: SITE.stats.patients, label: "Patients Treated" },
-                { value: `${SITE.stats.experience} Yrs`, label: "Experience" },
-                { value: SITE.stats.diagnostics, label: "Diagnostics" },
-              ].map((s, i) => (
-                <div key={s.label} className="flex items-center gap-4">
-                  {i > 0 && <div className="w-px h-10 bg-white/15" />}
-                  <div>
-                    <p className="font-mono font-medium text-xl sm:text-2xl text-brand-orange leading-none">
-                      {s.value}
-                    </p>
-                    <p className="font-sans text-[10px] sm:text-xs text-white/55 mt-1 uppercase tracking-wider">
-                      {s.label}
+              {/* Description */}
+              <p className="text-white/80 text-base sm:text-lg font-sans leading-relaxed max-w-2xl">
+                {slides[currentSlide].description}
+              </p>
+
+              {/* Highlights Checklist */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 max-w-xl">
+                {slides[currentSlide].highlights.map((item) => (
+                  <div key={item} className="flex items-center gap-2 text-sm text-white/90">
+                    <CheckCircle2 size={16} className="text-brand-orange shrink-0" />
+                    <span className="font-sans font-medium">{item}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Slide 1 Doctor Specific Credibility Card */}
+              {slides[currentSlide].credibility && (
+                <div className="bg-white/10 backdrop-blur-md border border-white/15 p-4 rounded-2xl max-w-xl flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-brand-orange/20 text-brand-orange flex items-center justify-center shrink-0">
+                    <Award size={20} />
+                  </div>
+                  <div className="text-white">
+                    <h4 className="font-display font-bold text-sm">
+                      {slides[currentSlide].credibility?.name}
+                    </h4>
+                    <p className="text-[11px] text-white/70 font-sans mt-0.5">
+                      {slides[currentSlide].credibility?.quals} · {slides[currentSlide].credibility?.exp}
                     </p>
                   </div>
                 </div>
-              ))}
+              )}
+
+              {/* CTA Row */}
+              <div className="flex flex-col sm:flex-row gap-4 pt-2">
+                <Link href={slides[currentSlide].primaryCta.href}>
+                  <button className="w-full sm:w-auto flex items-center justify-center gap-2 bg-brand-orange hover:bg-orange-600 text-white font-sans font-bold px-8 py-4 rounded-xl shadow-orange hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(246,125,32,0.45)] transition-all cursor-pointer">
+                    {slides[currentSlide].primaryCta.text === "Emergency Assistance" ? (
+                      <>
+                        <Phone size={18} />
+                        {slides[currentSlide].primaryCta.text}
+                      </>
+                    ) : (
+                      <>
+                        <Calendar size={18} />
+                        {slides[currentSlide].primaryCta.text}
+                      </>
+                    )}
+                  </button>
+                </Link>
+                <Link 
+                  href={slides[currentSlide].secondaryCta.href}
+                  target={slides[currentSlide].secondaryCta.href.startsWith("http") ? "_blank" : undefined}
+                  rel={slides[currentSlide].secondaryCta.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                >
+                  <button className="w-full sm:w-auto flex items-center justify-center gap-2 border-2 border-white/30 hover:border-brand-orange text-white hover:text-brand-orange font-sans font-bold px-8 py-4 rounded-xl transition-all cursor-pointer">
+                    {slides[currentSlide].secondaryCta.text.includes("Get Directions") ? (
+                      <>
+                        <MapPin size={18} />
+                        {slides[currentSlide].secondaryCta.text}
+                      </>
+                    ) : (
+                      <>
+                        <Phone size={18} />
+                        {slides[currentSlide].secondaryCta.text}
+                      </>
+                    )}
+                  </button>
+                </Link>
+              </div>
             </motion.div>
-          </motion.div>
-
-          {/* Right: Doctor visual */}
-          <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="relative hidden lg:flex justify-center"
-          >
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-brand-orange/[0.12] blur-2xl" />
-
-            {/* Doctor card placeholder */}
-            <div className="relative z-10 w-[380px] h-[500px] rounded-2xl overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.4)]">
-              <div className="w-full h-full bg-gradient-to-br from-navy-600 to-navy-800 flex flex-col items-center justify-center text-white p-8">
-                <div className="w-32 h-32 rounded-full bg-navy-500/50 border-4 border-brand-orange/30 flex items-center justify-center mb-6">
-                  <Brain size={48} className="text-brand-orange" />
-                </div>
-                <p className="font-display font-bold text-2xl text-center">
-                  {SITE.doctor.name}
-                </p>
-                <p className="font-sans text-sm text-white/70 text-center mt-2">
-                  {SITE.doctor.quals}
-                </p>
-                <p className="font-sans text-sm text-brand-orange font-medium mt-1">
-                  {SITE.doctor.specialty}
-                </p>
-              </div>
-
-              {/* Credential overlay */}
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-4 text-white">
-                <p className="font-display font-bold text-lg">
-                  {SITE.doctor.name}
-                </p>
-                <p className="font-sans text-sm text-white/70">
-                  DNB Neurology · {SITE.doctor.specialty}
-                </p>
-              </div>
-            </div>
-
-            {/* Floating cards */}
-            {floatingCards.map((card) => (
-              <motion.div
-                key={card.label}
-                className={`absolute ${card.pos} bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl px-4 py-3 flex items-center gap-3 z-20`}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: card.delay, duration: 0.5 }}
-              >
-                <div className="w-9 h-9 bg-brand-orange/20 rounded-lg flex items-center justify-center text-brand-orange">
-                  <card.icon size={18} />
-                </div>
-                <span className="font-sans text-sm font-medium text-white">
-                  {card.label}
-                </span>
-              </motion.div>
-            ))}
-          </motion.div>
+          </AnimatePresence>
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <motion.div
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/40"
-        animate={{ y: [0, 8, 0] }}
-        transition={{ repeat: Infinity, duration: 2 }}
-      >
-        <span className="font-sans text-xs uppercase tracking-widest">
-          Scroll
-        </span>
-        <div className="w-px h-8 bg-gradient-to-b from-white/40 to-transparent" />
-      </motion.div>
+      {/* Manual Slide Controls + Dot Navigation */}
+      <div className="container-custom flex justify-between items-center relative z-25 py-4 border-t border-white/10">
+        {/* Pagination indicator dots */}
+        <div className="flex gap-2.5">
+          {slides.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentSlide(idx)}
+              className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                currentSlide === idx ? "w-8 bg-brand-orange" : "w-2 bg-white/40 hover:bg-white/60"
+              }`}
+              aria-label={`Go to slide ${idx + 1}`}
+            />
+          ))}
+        </div>
+
+        {/* Arrow navigators */}
+        <div className="flex gap-3">
+          <button
+            onClick={handlePrevSlide}
+            className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white flex items-center justify-center transition-all cursor-pointer shadow-sm"
+            aria-label="Previous Slide"
+          >
+            <ChevronLeft size={20} />
+          </button>
+          <button
+            onClick={handleNextSlide}
+            className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white flex items-center justify-center transition-all cursor-pointer shadow-sm"
+            aria-label="Next Slide"
+          >
+            <ChevronRight size={20} />
+          </button>
+        </div>
+      </div>
+
+      {/* Global Trust Badges below Hero Content */}
+      <div className="bg-navy-950 border-t border-white/5 py-5 relative z-25">
+        <div className="container-custom">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center md:text-left">
+            {[
+              { label: "24/7 Emergency Care", subtitle: "Immediate stroke triage code", icon: Clock },
+              { label: "Experienced Specialists", subtitle: "Expert clinical leadership", icon: Award },
+              { label: "Advanced Neuro Technology", subtitle: "High precision EEG & diagnostics", icon: Brain },
+              { label: "Patient-Centered Care", subtitle: "Accredited standards facility", icon: Shield }
+            ].map((badge) => (
+              <div key={badge.label} className="flex flex-col sm:flex-row items-center md:items-start gap-3 px-2">
+                <div className="w-10 h-10 rounded-xl bg-white/5 text-brand-orange flex items-center justify-center shrink-0">
+                  <badge.icon size={20} />
+                </div>
+                <div className="text-left">
+                  <h4 className="text-xs font-bold text-white font-sans leading-tight">
+                    {badge.label}
+                  </h4>
+                  <p className="text-[10px] text-white/50 font-sans mt-0.5">
+                    {badge.subtitle}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </section>
   );
 }
