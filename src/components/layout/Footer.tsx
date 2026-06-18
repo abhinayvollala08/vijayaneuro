@@ -70,8 +70,7 @@ function YoutubeIcon({ size = 16, className }: { size?: number; className?: stri
 }
 
 const quickLinks = [
-  { label: "About Us", href: "/about" },
-  { label: "Our Doctor", href: "/doctor" },
+  { label: "About Doctor", href: "/doctor" },
   { label: "Diagnostics", href: "/diagnostics" },
   { label: "Rehabilitation", href: "/rehabilitation" },
   { label: "Contact", href: "/contact" },

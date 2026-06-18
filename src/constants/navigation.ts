@@ -2,7 +2,7 @@ import type { NavItem } from "@/types";
 
 export const NAV_ITEMS: NavItem[] = [
   { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
+  { label: "Doctor", href: "/doctor" },
   {
     label: "Treatments",
     href: "/disorders",
@@ -23,7 +23,6 @@ export const NAV_ITEMS: NavItem[] = [
   },
   { label: "Diagnostics", href: "/diagnostics" },
   { label: "Rehabilitation", href: "/rehabilitation" },
-  { label: "Doctor", href: "/doctor" },
   {
     label: "Resources",
     href: "/resources",

@@ -26,55 +26,69 @@ const slides = [
   {
     image: "/doctor-hero2.jpg",
     label: "Expert Neurology Care",
-    headline: "Expert Neurology & Neurosurgery Care You Can Trust",
-    description: "Advanced neurological diagnosis and treatment delivered by experienced specialists using modern clinical protocols.",
+    headline: "Expert Neurology & Neurosurgery Care",
+    description: "Advanced neurological diagnostics and surgery led by experienced specialists.",
     highlights: [
-      "Stroke & Emergency Neuro Care",
+      "Stroke Emergency Care",
       "Brain & Spine Surgery",
-      "Epilepsy Management",
-      "Movement Disorders Treatment",
+      "Epilepsy & Seizure Care",
+      "Movement Disorders"
     ],
     credibility: {
+      icon: Award,
       name: SITE.doctor.name,
       quals: SITE.doctor.quals,
-      exp: "15+ Years of Clinical Experience",
+      exp: "15+ Years Experience",
     },
     primaryCta: { text: "Book Appointment", href: "/appointment" },
-    secondaryCta: { text: "Call Now", href: "tel:+919121568899" },
+    secondaryCta: { text: "Call Now", href: `tel:${SITE.phone}` },
   },
   {
     image: "/hospital_eeg_lab.png",
     label: "Precision Diagnostics",
-    headline: "Precision Diagnostics with Advanced Neuro Technology",
-    description: "Accurate neurological evaluation powered by modern imaging and diagnostic systems for faster, safer treatment decisions.",
+    headline: "Precision Neuro Diagnostics",
+    description: "Accurate evaluation powered by state-of-the-art neurophysiology lab technology.",
     highlights: [
-      "MRI & CT Scans",
-      "EEG & EMG Testing",
-      "Neurophysiology Lab",
-      "Early Detection Systems",
+      "In-House Video EEG",
+      "Electromyography (EMG)",
+      "High-Resolution Imaging",
+      "Rapid Laboratory Lab"
     ],
+    credibility: {
+      icon: Brain,
+      name: "Advanced Diagnostics Lab",
+      quals: "In-house Video EEG & ENMG",
+      exp: "Accredited Standards",
+    },
     primaryCta: { text: "Explore Services", href: "/diagnostics" },
     secondaryCta: { text: "Book Consultation", href: "/appointment" },
   },
   {
     image: "/hospital_icu.png",
     label: "Trusted Hospital Experience",
-    headline: "Compassionate Care in a World-Class Neuro Hospital",
-    description: "We combine advanced neurological care with a patient-first approach, ensuring safety, comfort, and trust at every stage of treatment.",
+    headline: "24/7 Emergency Neuro Care",
+    description: "World-class care in a patient-first facility with a dedicated neuro ICU.",
     highlights: [
-      "24/7 Emergency Neuro Care",
+      "24/7 Stroke Response",
       "Dedicated Neuro ICU",
-      "Hygienic, Modern Infrastructure",
-      "High Patient Satisfaction",
+      "Modern Infrastructure",
+      "Highly Rated Patient Care"
     ],
-    primaryCta: { text: "Emergency Assistance", href: "tel:+919121568899" },
-    secondaryCta: { text: "Get Directions (Google Maps)", href: "https://maps.google.com/?q=Vijaya+Neuro+Hospital" },
+    credibility: {
+      icon: Shield,
+      name: "24/7 Stroke Care Unit",
+      quals: "Dedicated Neuro ICU Facility",
+      exp: "Immediate Response",
+    },
+    primaryCta: { text: "Emergency Assistance", href: `tel:${SITE.emergency}` },
+    secondaryCta: { text: "Get Directions", href: "/contact" },
   },
 ];
 
 export function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const [userInteracted, setUserInteracted] = useState(false);
 
   // Swipe support states
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -88,24 +102,45 @@ export function HeroSection() {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
+  const handleManualNext = () => {
+    setUserInteracted(true);
+    handleNextSlide();
+  };
+
+  const handleManualPrev = () => {
+    setUserInteracted(true);
+    handlePrevSlide();
+  };
+
+  const handleSelectSlide = (idx: number) => {
+    setUserInteracted(true);
+    setCurrentSlide(idx);
+  };
+
   // Keyboard accessibility
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") handleNextSlide();
-      if (e.key === "ArrowLeft") handlePrevSlide();
+      if (e.key === "ArrowRight") {
+        setUserInteracted(true);
+        handleNextSlide();
+      }
+      if (e.key === "ArrowLeft") {
+        setUserInteracted(true);
+        handlePrevSlide();
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [currentSlide]);
 
-  // Autoplay (pauses on hover)
+  // Autoplay (pauses on hover, permanently stops on manual user interaction)
   useEffect(() => {
-    if (isHovered) return;
+    if (isHovered || userInteracted) return;
     const timer = setInterval(() => {
       handleNextSlide();
-    }, 6000);
+    }, 8000);
     return () => clearInterval(timer);
-  }, [isHovered, currentSlide]);
+  }, [isHovered, userInteracted, currentSlide]);
 
   // Mobile swipe handlers
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -121,8 +156,14 @@ export function HeroSection() {
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > 50;
     const isRightSwipe = distance < -50;
-    if (isLeftSwipe) handleNextSlide();
-    if (isRightSwipe) handlePrevSlide();
+    if (isLeftSwipe) {
+      setUserInteracted(true);
+      handleNextSlide();
+    }
+    if (isRightSwipe) {
+      setUserInteracted(true);
+      handlePrevSlide();
+    }
     setTouchStart(null);
     setTouchEnd(null);
   };
@@ -134,11 +175,11 @@ export function HeroSection() {
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      className="relative min-h-[100vh] lg:h-[100vh] flex flex-col justify-between overflow-hidden bg-navy-900"
+      className="relative min-h-[100dvh] flex flex-col justify-between bg-navy-900 lg:py-8 py-4"
     >
       {/* Background Images with Fade Transition */}
-      <div className="absolute inset-0 z-0">
-        <AnimatePresence initial={false} mode="wait">
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <AnimatePresence initial={false}>
           <motion.div
             key={currentSlide}
             initial={{ opacity: 0 }}
@@ -157,12 +198,19 @@ export function HeroSection() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Linear dark gradient overlay for typography contrast */}
-        <div className="absolute inset-0 z-10" style={{ background: "linear-gradient(to right, rgba(12, 36, 68, 0.75), rgba(12, 36, 68, 0.55))" }} />
+        {/* Dynamic, readability-focused overlay gradients */}
+        <div 
+          className="absolute inset-0 z-10 block md:hidden" 
+          style={{ background: "linear-gradient(to bottom, rgba(12, 36, 68, 0.95), rgba(12, 36, 68, 0.85))" }} 
+        />
+        <div 
+          className="absolute inset-0 z-10 hidden md:block" 
+          style={{ background: "linear-gradient(to right, rgba(12, 36, 68, 0.96) 0%, rgba(12, 36, 68, 0.85) 45%, rgba(12, 36, 68, 0.35) 100%)" }} 
+        />
       </div>
 
       {/* Main Slide Content Grid */}
-      <div className="container-custom flex-grow flex items-center relative z-25 py-16 md:py-24">
+      <div className="container-custom flex-grow flex items-center relative z-25 pt-28 pb-8 md:pt-36 md:pb-12">
         <div className="w-full max-w-3xl">
           <AnimatePresence initial={false} mode="wait">
             <motion.div
@@ -171,65 +219,70 @@ export function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.5 }}
-              className="space-y-6 text-left"
+              className="space-y-4 text-left"
             >
               {/* Trust Badge label */}
-              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4.5 py-1.5 shadow-sm">
-                <Shield size={14} className="text-brand-orange" />
-                <span className="text-white text-xs font-bold uppercase tracking-wider font-sans">
+              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-3.5 py-1 shadow-sm">
+                <Shield size={12} className="text-brand-orange" />
+                <span className="text-white text-[11px] font-bold uppercase tracking-wider font-sans">
                   {slides[currentSlide].label}
                 </span>
               </div>
 
               {/* Headline */}
-              <h1 className="font-display font-bold text-4xl sm:text-5xl xl:text-6xl text-white leading-[1.10]">
+              <h1 className="font-display font-bold text-3xl sm:text-4xl xl:text-5xl text-white leading-[1.10]">
                 {slides[currentSlide].headline}
               </h1>
 
               {/* Description */}
-              <p className="text-white/80 text-base sm:text-lg font-sans leading-relaxed max-w-2xl">
+              <p className="text-white/80 text-sm sm:text-base font-sans leading-relaxed max-w-2xl">
                 {slides[currentSlide].description}
               </p>
 
               {/* Highlights Checklist */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 max-w-xl">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 max-w-xl">
                 {slides[currentSlide].highlights.map((item) => (
-                  <div key={item} className="flex items-center gap-2 text-sm text-white/90">
-                    <CheckCircle2 size={16} className="text-brand-orange shrink-0" />
+                  <div key={item} className="flex items-center gap-2 text-xs sm:text-sm text-white/90">
+                    <CheckCircle2 size={14} className="text-brand-orange shrink-0" />
                     <span className="font-sans font-medium">{item}</span>
                   </div>
                 ))}
               </div>
 
-              {/* Slide 1 Doctor Specific Credibility Card */}
-              {slides[currentSlide].credibility && (
-                <div className="bg-white/10 backdrop-blur-md border border-white/15 p-4 rounded-2xl max-w-xl flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-brand-orange/20 text-brand-orange flex items-center justify-center shrink-0">
-                    <Award size={20} />
+              {/* Slide Credibility Card */}
+              {(() => {
+                const cred = slides[currentSlide].credibility;
+                if (!cred) return null;
+                const IconComponent = cred.icon;
+                return (
+                  <div className="bg-white/10 backdrop-blur-md border border-white/15 p-3 rounded-xl max-w-lg flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-brand-orange/20 text-brand-orange flex items-center justify-center shrink-0">
+                      <IconComponent size={16} />
+                    </div>
+                    <div className="text-white">
+                      <h4 className="font-display font-bold text-xs sm:text-sm">
+                        {cred.name}
+                      </h4>
+                      <p className="text-[10px] text-white/70 font-sans mt-0.5">
+                        {cred.quals} · {cred.exp}
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-white">
-                    <h4 className="font-display font-bold text-sm">
-                      {slides[currentSlide].credibility?.name}
-                    </h4>
-                    <p className="text-[11px] text-white/70 font-sans mt-0.5">
-                      {slides[currentSlide].credibility?.quals} · {slides[currentSlide].credibility?.exp}
-                    </p>
-                  </div>
-                </div>
-              )}
+                );
+              })()}
 
               {/* CTA Row */}
-              <div className="flex flex-col sm:flex-row gap-4 pt-2">
+              <div className="flex flex-col sm:flex-row gap-3 pt-1">
                 <Link href={slides[currentSlide].primaryCta.href}>
-                  <button className="w-full sm:w-auto flex items-center justify-center gap-2 bg-brand-orange hover:bg-orange-600 text-white font-sans font-bold px-8 py-4 rounded-xl shadow-orange hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(246,125,32,0.45)] transition-all cursor-pointer">
+                  <button className="w-full sm:w-auto flex items-center justify-center gap-2 bg-brand-orange hover:bg-orange-600 text-white font-sans font-bold px-6 py-3 text-sm rounded-lg shadow-orange hover:-translate-y-0.5 hover:shadow-[0_16px_40px_rgba(246,125,32,0.45)] transition-all cursor-pointer">
                     {slides[currentSlide].primaryCta.text === "Emergency Assistance" ? (
                       <>
-                        <Phone size={18} />
+                        <Phone size={16} />
                         {slides[currentSlide].primaryCta.text}
                       </>
                     ) : (
                       <>
-                        <Calendar size={18} />
+                        <Calendar size={16} />
                         {slides[currentSlide].primaryCta.text}
                       </>
                     )}
@@ -240,15 +293,15 @@ export function HeroSection() {
                   target={slides[currentSlide].secondaryCta.href.startsWith("http") ? "_blank" : undefined}
                   rel={slides[currentSlide].secondaryCta.href.startsWith("http") ? "noopener noreferrer" : undefined}
                 >
-                  <button className="w-full sm:w-auto flex items-center justify-center gap-2 border-2 border-white/30 hover:border-brand-orange text-white hover:text-brand-orange font-sans font-bold px-8 py-4 rounded-xl transition-all cursor-pointer">
+                  <button className="w-full sm:w-auto flex items-center justify-center gap-2 border-2 border-white/30 hover:border-brand-orange text-white hover:text-brand-orange font-sans font-bold px-6 py-3 text-sm rounded-lg transition-all cursor-pointer">
                     {slides[currentSlide].secondaryCta.text.includes("Get Directions") ? (
                       <>
-                        <MapPin size={18} />
+                        <MapPin size={16} />
                         {slides[currentSlide].secondaryCta.text}
                       </>
                     ) : (
                       <>
-                        <Phone size={18} />
+                        <Phone size={16} />
                         {slides[currentSlide].secondaryCta.text}
                       </>
                     )}
@@ -267,7 +320,7 @@ export function HeroSection() {
           {slides.map((_, idx) => (
             <button
               key={idx}
-              onClick={() => setCurrentSlide(idx)}
+              onClick={() => handleSelectSlide(idx)}
               className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
                 currentSlide === idx ? "w-8 bg-brand-orange" : "w-2 bg-white/40 hover:bg-white/60"
               }`}
@@ -279,14 +332,14 @@ export function HeroSection() {
         {/* Arrow navigators */}
         <div className="flex gap-3">
           <button
-            onClick={handlePrevSlide}
+            onClick={handleManualPrev}
             className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white flex items-center justify-center transition-all cursor-pointer shadow-sm"
             aria-label="Previous Slide"
           >
             <ChevronLeft size={20} />
           </button>
           <button
-            onClick={handleNextSlide}
+            onClick={handleManualNext}
             className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white flex items-center justify-center transition-all cursor-pointer shadow-sm"
             aria-label="Next Slide"
           >

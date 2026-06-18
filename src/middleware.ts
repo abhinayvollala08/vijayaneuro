@@ -1,5 +1,8 @@
-import { auth } from "@/lib/auth";
+import NextAuth from "next-auth";
+import { authConfig } from "@/lib/auth.config";
 import { NextResponse } from "next/server";
+
+const { auth } = NextAuth(authConfig);
 
 const ROLE_ACCESS: Record<string, string[]> = {
   PATIENT: ["/patient"],
@@ -21,7 +24,10 @@ export default auth((req) => {
   const role = session?.user?.role as string;
 
   const protectedPrefixes = ["/patient", "/doctor", "/admin", "/editor"];
-  const isProtected = protectedPrefixes.some((p) => pathname.startsWith(p));
+  const isProtected =
+    protectedPrefixes.some((p) => pathname.startsWith(p)) &&
+    pathname !== "/doctor" &&
+    pathname !== "/doctor/";
 
   // Not authenticated — redirect to login
   if (isProtected && !session) {

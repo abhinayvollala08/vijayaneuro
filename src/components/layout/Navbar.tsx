@@ -22,6 +22,9 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const pathname = usePathname();
+  
+  const isHome = pathname === "/";
+  const isTransparent = isHome && !scrolled && !mobileOpen;
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -57,10 +60,10 @@ export function Navbar() {
       {/* Main navbar */}
       <header
         className={cn(
-          "sticky top-0 z-50 transition-all duration-300",
-          scrolled
-            ? "bg-white/95 backdrop-blur-xl shadow-card border-b border-border"
-            : "bg-white"
+          "z-50 transition-all duration-300",
+          isTransparent
+            ? "absolute top-0 lg:top-[40px] left-0 right-0 bg-transparent border-b border-transparent"
+            : "sticky top-0 bg-white/95 backdrop-blur-xl shadow-card border-b border-border"
         )}
       >
         <div className="container-custom flex items-center justify-between h-[72px]">
@@ -70,7 +73,10 @@ export function Navbar() {
               <Brain className="w-5 h-5 text-white" />
             </div>
             <div>
-              <span className="font-display font-bold text-navy-700 text-lg leading-none block">
+              <span className={cn(
+                "font-display font-bold text-lg leading-none block transition-colors",
+                isTransparent ? "text-white" : "text-navy-700"
+              )}>
                 Vijaya Neuro
               </span>
               <span className="text-[10px] uppercase tracking-[0.15em] text-brand-orange font-semibold">
@@ -95,8 +101,8 @@ export function Navbar() {
                   className={cn(
                     "flex items-center gap-1 px-3.5 py-2 rounded-lg text-sm font-medium font-sans transition-colors",
                     pathname === item.href
-                      ? "text-brand-orange bg-orange-50"
-                      : "text-navy-700 hover:text-brand-orange hover:bg-navy-50"
+                      ? (isTransparent ? "text-brand-orange bg-white/10" : "text-brand-orange bg-orange-50")
+                      : (isTransparent ? "text-white hover:text-brand-orange hover:bg-white/10" : "text-navy-700 hover:text-brand-orange hover:bg-navy-50")
                   )}
                 >
                   {item.label}
@@ -146,7 +152,10 @@ export function Navbar() {
           <div className="hidden lg:flex items-center gap-3">
             <a
               href={`tel:${SITE.phone}`}
-              className="flex items-center gap-2 text-sm text-navy-700 hover:text-brand-orange transition-colors font-sans"
+              className={cn(
+                "flex items-center gap-2 text-sm transition-colors font-sans",
+                isTransparent ? "text-white/90 hover:text-brand-orange" : "text-navy-700 hover:text-brand-orange"
+              )}
             >
               <Phone size={16} />
               <span className="font-medium">Call</span>
@@ -159,18 +168,40 @@ export function Navbar() {
             </Button>
           </div>
 
-          {/* Mobile menu button */}
-          <button
-            className="lg:hidden p-2 rounded-lg hover:bg-navy-50 transition-colors"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
-          >
-            {mobileOpen ? (
-              <X size={24} className="text-navy-700" />
-            ) : (
-              <Menu size={24} className="text-navy-700" />
-            )}
-          </button>
+          {/* Mobile CTA and Menu Controls */}
+          <div className="flex lg:hidden items-center gap-2">
+            {/* Mobile Emergency Call Link */}
+            <a
+              href={`tel:${SITE.emergency}`}
+              className={cn(
+                "p-2 rounded-xl transition-all relative shrink-0",
+                isTransparent ? "text-red-400 bg-white/10 hover:bg-white/20" : "text-red-600 bg-red-50 hover:bg-red-100"
+              )}
+              aria-label="Call Emergency Hotline"
+            >
+              <Phone size={20} className="animate-pulse" />
+              <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+              </span>
+            </a>
+            
+            {/* Mobile menu button */}
+            <button
+              className={cn(
+                "p-2 rounded-lg transition-colors",
+                isTransparent ? "hover:bg-white/10" : "hover:bg-navy-50"
+              )}
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            >
+              {mobileOpen ? (
+                <X size={24} className={isTransparent ? "text-white" : "text-navy-700"} />
+              ) : (
+                <Menu size={24} className={isTransparent ? "text-white" : "text-navy-700"} />
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Mobile menu */}
